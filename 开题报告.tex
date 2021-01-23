@@ -1,17 +1,28 @@
 \documentclass{Style/seucloud}
 
-\addbibresource{Biblio/ref}
+
+\addbibresource{IEEEabrv,Biblio/ref}
 
 \begin{document}
 
     % 记录基本信息
     \titleup{基于\LaTeX 的}
     \titledown{排版技术研究与实现}
+
     \author{张三}
+
     \advisor{李四}
     \advisortitle{副教授}
+
+    % 如果有两位导师，请填写第二位导师的姓名和职称
+    % \secondadvisor{某某}
+    % \secondadvisortitle{教授} 
+    
+    \externaladvisor{王五} % 如果是学硕不需要校外导师，将该行注释
+
     \college{职业技术学院}
     \subject{挖掘机技术}
+
     \enrollmenttime{2119年9月}
     \reporttime{2121年1月}
 
@@ -40,7 +51,7 @@
     \input{Tex/chap_schedule}
     
     % 参考文献  请勿修改
-    \input{Tex/chap_references}
+    \input{Tex/referencespage}
 
 
 \end{document}

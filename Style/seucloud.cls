@@ -1,6 +1,4 @@
 
-
-
 \NeedsTeXFormat{LaTeX2e}%
 \ProvidesClass{seucloud}[东南大学云计算开题报告]%
 
@@ -11,7 +9,7 @@
 \RequirePackage[utf8]{inputenc}
 \RequirePackage{fancyhdr}
 \RequirePackage{fontspec}
-\RequirePackage[backend=bibtex,style=numeric]{biblatex}
+\RequirePackage[backend=bibtex,style=ieee]{biblatex}
 \RequirePackage{xparse}
 \RequirePackage{graphicx}
 \RequirePackage{float}
@@ -23,6 +21,7 @@
 \RequirePackage{url}
 \RequirePackage{amsmath}
 \RequirePackage{makecell}
+\RequirePackage{tikz}
 
 \DeclareCaptionFont{kaishu}{\kaishu}
 
@@ -34,17 +33,28 @@
 
 \renewcommand{\labelenumi}{\arabic{enumi})}
 
+\newif\ifexternaladvisorexist\externaladvisorexistfalse
+\newif\ifsecondadvisorexist\secondadvisorexistfalse
 
 \newcommand{\titleup}[1]{\newcommand{\value@titleup}{#1}}
 \newcommand{\titledown}[1]{\newcommand{\value@titledown}{#1}}
 
 \renewcommand{\author}[1]{\newcommand{\value@author}{#1}}
+\newcommand{\externaladvisor}[1]{
+    \newcommand{\value@externaladvisor}{#1}
+    \externaladvisorexisttrue
+}
+\newcommand{\secondadvisor}[1]{
+    \newcommand{\value@secondadvisor}{#1}
+    \secondadvisorexisttrue
+}
 \newcommand{\advisor}[1]{\newcommand{\value@advisor}{#1}}
 \newcommand{\college}[1]{\newcommand{\value@college}{#1}}
 \newcommand{\subject}[1]{\newcommand{\value@subject}{#1}}
 \newcommand{\enrollmenttime}[1]{\newcommand{\value@enrollmenttime}{#1}}
 \newcommand{\reporttime}[1]{\newcommand{\value@reporttime}{#1}}
 \newcommand{\advisortitle}[1]{\newcommand{\value@advisortitle}{#1}}
+\newcommand{\secondadvisortitle}[1]{\newcommand{\value@secondadvisortitle}{#1}}
 
 \newcommand{\setfancyheadfoot}{
     \fancyhf{}
@@ -69,8 +79,11 @@
         \begin{tabular}[b]{rl}
             \makebox[8em][s]{院  （系、所）}  & \underline{\makebox[10em][c]{\value@college}} \\
             \makebox[8em][s]{学科（专 业）}   & \underline{\makebox[10em][c]{\value@subject}} \\
-            \makebox[8em][s]{研究生姓名}      & \underline{\makebox[10em][c]{\value@author}} \\
-            \makebox[8em][s]{导师姓名}        & \underline{\makebox[10em][c]{\value@advisor}} \\
+            \makebox[8em][s]{研究生姓名}      & \underline{\makebox[10em][c]{\makebox[4em][s]{\value@author}}} \\
+            \makebox[8em][s]{导师姓名}        & \underline{\makebox[10em][c]{\makebox[4em][s]{\value@advisor}}} \\
+            \ifexternaladvisorexist
+            \makebox[8em][s]{校外导师姓名}        & \underline{\makebox[10em][c]{\makebox[4em][s]{\value@externaladvisor}}} \\
+            \fi
             \makebox[8em][s]{入学年月}        & \underline{\makebox[10em][c]{\value@enrollmenttime}} \\
             \makebox[8em][s]{开题报告日期}    & \underline{\makebox[10em][c]{\value@reporttime}} \\
         \end{tabular}
@@ -78,14 +91,16 @@
     }
 }
 
-
 \newcommand{\substudentinfo}{
     {
         \renewcommand{\arraystretch}{1.1}
         \kaishu
         \begin{tabular}[b]{rl}
-            \makebox[6em][s]{硕士研究生:}   & \value@author \\
-            \makebox[6em][s]{指导老师:}     & \value@advisor \/ \value@advisortitle \\
+            \makebox[6em][s]{硕士研究生:}   & \makebox[3em][s]{\value@author} \\
+            \makebox[6em][s]{指导老师:}     & \makebox[3em][s]{\value@advisor} \/ \value@advisortitle \\
+            \ifsecondadvisorexist
+                \makebox[6em][s]{}     & \makebox[3em][s]{\value@secondadvisor} \/ \value@secondadvisortitle \\
+            \fi
         \end{tabular}
     }
 }
@@ -158,6 +173,40 @@
     \noindent\textbf{#1\/#2}
     \par
 }
+
+
+
+\newcommand*{\myhash}{%
+    \begin{tikzpicture}
+        % Width: 80% of equal sign
+        \pgfmathsetlengthmacro\myWidth{.8*width("=")}%
+        % Height: height of uppercase letter
+        \pgfmathsetlengthmacro\myHeight{height("H")}%
+        % Space between horizontal lines
+        \pgfmathsetlengthmacro\mySepY{.3333*\myWidth}%
+        % Side bearing
+        \pgfmathsetlengthmacro\mySideBearing{.1*\myWidth}%
+        % Angle for slanted vertical lines
+        \def\myAngle{70}%
+        % Calculate separation of vertical lines in horizontal direction
+        \pgfmathsetlengthmacro\mySepX{\mySepY/sin(\myAngle)}%
+        % Calculate the width of a slanted line
+        \pgfmathsetlengthmacro\mySlantX{\myHeight/tan(\myAngle)}%
+        \draw[line cap=round]
+            (0, {(\myHeight - \mySepY)/2}) -- ++(\myWidth, 0)
+            (0, {(\myHeight + \mySepY)/2}) -- ++(\myWidth, 0)
+            ({(\myWidth - \mySepX - \mySlantX)/2}, 0)
+            -- ({(\myWidth - \mySepX + \mySlantX)/2}, \myHeight)
+            ({(\myWidth + \mySepX - \mySlantX)/2}, 0)
+            -- ({(\myWidth + \mySepX + \mySlantX)/2}, \myHeight)
+        ;%
+        \useasboundingbox
+            (-\mySideBearing, 0)
+            (\myWidth + \mySideBearing, \myHeight)
+        ;% 
+    \end{tikzpicture}%
+}
+
 
 
 
